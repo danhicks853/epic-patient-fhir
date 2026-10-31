@@ -121,6 +121,31 @@ class FakeEpic(http.server.BaseHTTPRequestHandler):
                              {"attachment": {"contentType": "text/html", "url": "Binary/h1"}}]},
             ]))
 
+        if u.path == "/fhir/DiagnosticReport":
+            return self._json(bundle([
+                {"resourceType": "DiagnosticReport", "id": "r1", "status": "final",
+                 "code": {"text": "CT Abdomen Pelvis"}, "category": [{"text": "Imaging"}],
+                 "effectiveDateTime": "2026-10-29T14:40:00Z",
+                 "result": [{"reference": "Observation/o1"}],
+                 "presentedForm": [{"contentType": "text/html", "url": "Binary/h2"}]},
+            ]))
+
+        if u.path == "/fhir/MedicationRequest":
+            return self._json(bundle([
+                {"resourceType": "MedicationRequest", "id": "m1", "status": "active", "intent": "order",
+                 "authoredOn": "2026-10-29", "medicationCodeableConcept": {"text": "piperacillin-tazobactam"},
+                 "dosageInstruction": [{"text": "4.5 g IV q8h"}]},
+            ]))
+
+        if u.path == "/fhir/Binary/h2":
+            body = b"<html><body><p>IMPRESSION: Perianal fistula with abscess.</p></body></html>"
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
+
         if u.path == "/fhir/Binary/h1":
             assert self.headers.get("Accept") == "text/html"
             body = b"<html><body><p>Hospital Day: 2</p><p>Plan&nbsp;continue Zosyn</p></body></html>"

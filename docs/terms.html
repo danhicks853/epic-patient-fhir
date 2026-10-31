@@ -15,15 +15,16 @@
 <p>Last updated: October 31, 2026</p>
 
 <h2>What this is</h2>
-<p>epic-patient-fhir is free, open-source software that lets you download a copy of your own medical record from health systems that use Epic (MyChart). It uses the patient access API that health systems are required to provide. Source code: <a href="https://github.com/danhicks853/epic-patient-fhir">github.com/danhicks853/epic-patient-fhir</a>.</p>
+<p>epic-patient-fhir is free, open-source software that lets you, or an AI assistant you choose to connect, read and download your own medical record from health systems that use Epic (MyChart). It uses the patient access API that health systems are required to provide. Source code: <a href="https://github.com/danhicks853/epic-patient-fhir">github.com/danhicks853/epic-patient-fhir</a>.</p>
 
-<h2>Your data stays on your computer</h2>
+<h2>Where your data goes</h2>
 <ul>
   <li>The software runs on your own computer. There is no server, account, or cloud service operated by this project.</li>
-  <li>Your records are downloaded directly from your health system to a folder on your computer. They are not sent to the project or to anyone else.</li>
+  <li>Your records travel directly from your health system to your computer. They are never sent to this project.</li>
   <li>You sign in on your health system's own MyChart page. The software never sees your MyChart password.</li>
   <li>The access token your health system issues is held in memory for one session and is not written to disk.</li>
   <li>The project collects no analytics, telemetry, or personal information.</li>
+  <li><strong>If you use the software with an AI assistant</strong> (for example, Claude), the information the assistant retrieves during your conversation is sent to that assistant's provider and handled under their terms and privacy policy. Only what the assistant requests is sent, not your whole record. Using the command line export alone sends nothing anywhere.</li>
   <li>The sign-in return page on this website forwards the one-time sign-in code to the software on your computer. It does not store, log, or transmit that code anywhere else, and the code cannot be used without a secret that never leaves your computer.</li>
 </ul>
 

@@ -5,14 +5,15 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "epic-patient-fhir"
 version = "0.1.0"
-description = "Download your own medical record from Epic (MyChart) health systems via SMART on FHIR."
+description = "MCP server and CLI for reading your own medical record from Epic (MyChart) via SMART on FHIR."
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license = { text = "MIT" }
-dependencies = []
+dependencies = ["mcp>=1.2"]
 
 [project.scripts]
 epic-patient-fhir = "epic_patient_fhir.cli:main"
+epic-patient-fhir-mcp = "epic_patient_fhir.mcp_server:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
