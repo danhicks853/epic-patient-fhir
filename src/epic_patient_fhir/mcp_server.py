@@ -32,12 +32,13 @@ from .normalize import (
     obs_date,
     observation_row,
 )
-from .orgs import ORGS, Org, client_id_for, redirect_for
+from .orgs import Org, client_id_for, find_orgs, redirect_for, resolve_org
 
 INSTRUCTIONS = """\
 Reads the user's own medical record from their health system (Epic/MyChart).
-Start with `connection_status`. If not connected, call `connect` with the
-health system key from `list_health_systems`; the user signs in in their
+Start with `connection_status`. If not connected, find the user's health
+system with `list_health_systems(search=...)` and call `connect` with its key
+(ask the user which one if unsure); the user signs in in their
 browser, then call `connection_status` until it says connected.
 Data is the user's own. Present it plainly, note reference ranges and flags,
 and do not diagnose. Suggest they confirm anything important with their care team.
@@ -148,15 +149,25 @@ def _period_start(r: dict) -> str:
 # ---------------------------------------------------------------- connection
 
 @mcp.tool()
-def list_health_systems() -> list[dict]:
-    """List health systems this connector knows. Use the `key` with `connect`."""
-    return [{"key": o.key, "name": o.name, "test_only": o.sandbox} for o in ORGS.values()]
+def list_health_systems(search: str | None = None, limit: int = 25) -> dict:
+    """Find a health system to connect to. Searches about 480 Epic organizations by name.
+
+    search: words from the health system's name, e.g. "advent", "mayo", "kaiser".
+    Pass the result's `key` to `connect`.
+    """
+    hits = find_orgs(search, limit=limit)
+    return {
+        "count": len(hits),
+        "health_systems": [{"key": o.key, "name": o.name, "test_only": o.sandbox} for o in hits],
+        "note": "Use key 'sandbox' to try Epic's fake test patients.",
+    }
 
 
 @mcp.tool()
-def connect(health_system: str = "adventhealth", custom_fhir_base: str | None = None) -> dict:
+def connect(health_system: str, custom_fhir_base: str | None = None) -> dict:
     """Start MyChart sign-in for a health system.
 
+    health_system: a `key` from `list_health_systems` (or the exact name).
     Opens the user's browser to their health system's sign-in page and returns
     right away. The user signs in and approves; then call `connection_status`.
     `custom_fhir_base` targets any Epic FHIR R4 endpoint not in the list.
@@ -167,10 +178,10 @@ def connect(health_system: str = "adventhealth", custom_fhir_base: str | None = 
         STATE.reset()
         if custom_fhir_base:
             org = Org("custom", "Custom endpoint", custom_fhir_base.rstrip("/"))
-        elif health_system in ORGS:
-            org = ORGS[health_system]
         else:
-            return {"error": f"Unknown health system '{health_system}'. See list_health_systems."}
+            org = resolve_org(health_system)
+            if not org:
+                return {"error": f"No single match for '{health_system}'. Call list_health_systems with a search."}
         try:
             cid = client_id_for(org)
             redirect = redirect_for(org)

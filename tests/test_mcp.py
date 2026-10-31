@@ -55,7 +55,7 @@ class McpEndToEnd(unittest.TestCase):
         # Not connected yet: tools explain instead of crashing
         self.assertIn("connect", self.call("get_labs")["error"])
 
-        started = self.call("connect", {"custom_fhir_base": self.base})
+        started = self.call("connect", {"health_system": "custom", "custom_fhir_base": self.base})
         self.assertEqual(started["status"], "waiting_for_sign_in")
 
         deadline = time.monotonic() + 15

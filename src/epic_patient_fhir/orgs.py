@@ -6,8 +6,10 @@ on fhir.epic.com (see README). Environment variables override them.
 """
 from __future__ import annotations
 
+import json
 import os
 from dataclasses import dataclass
+from importlib import resources
 
 # Filled in after registration. Non-prod works only on Epic's sandbox;
 # prod works only at real health systems after "Ready for Production".
@@ -29,25 +31,53 @@ class Org:
     sandbox: bool = False
 
 
-# v1 ships a hand-picked list. A later release generates the full list from
-# Epic's published endpoint directory (a snapshot, refreshed per release;
-# Epic asks apps not to query that directory at runtime).
-ORGS = {
-    o.key: o
-    for o in [
-        Org(
-            "sandbox",
-            "Epic on FHIR sandbox (fake test patients)",
-            "https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R4",
-            sandbox=True,
-        ),
-        Org(
-            "adventhealth",
-            "AdventHealth",
-            "https://mobile.adventhealth.com/oauth2-PRD/api/FHIR/R4",
-        ),
-    ]
-}
+SANDBOX = Org(
+    "sandbox",
+    "Epic on FHIR sandbox (fake test patients)",
+    "https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R4",
+    sandbox=True,
+)
+
+
+def _load_orgs() -> dict[str, Org]:
+    """Sandbox plus the bundled snapshot of Epic's published endpoint directory.
+
+    Epic asks apps not to query that directory at runtime, so it ships with the
+    package and is refreshed per release by scripts/update_orgs.py.
+    """
+    orgs = {SANDBOX.key: SANDBOX}
+    try:
+        data = json.loads(resources.files(__package__).joinpath("orgs_data.json").read_text(encoding="utf-8"))
+        for o in data.get("orgs", []):
+            orgs[o["key"]] = Org(o["key"], o["name"], o["fhir_base"])
+    except (FileNotFoundError, ModuleNotFoundError, ValueError):
+        pass
+    return orgs
+
+
+ORGS = _load_orgs()
+
+
+def find_orgs(query: str | None, limit: int = 25) -> list[Org]:
+    """Health systems whose name or key contains every word of `query`."""
+    if not query:
+        return list(ORGS.values())[:limit]
+    words = query.lower().split()
+    hits = [o for o in ORGS.values() if all(w in f"{o.name} {o.key}".lower() for w in words)]
+    hits.sort(key=lambda o: (not o.name.lower().startswith(words[0]), len(o.name)))
+    return hits[:limit]
+
+
+def resolve_org(key_or_name: str) -> Org | None:
+    """Exact key, exact name (any case), or the single search match."""
+    if key_or_name in ORGS:
+        return ORGS[key_or_name]
+    low = key_or_name.lower()
+    for o in ORGS.values():
+        if o.name.lower() == low:
+            return o
+    hits = find_orgs(key_or_name, limit=2)
+    return hits[0] if len(hits) == 1 else None
 
 
 def redirect_for(org: Org, override: str | None = None) -> str | None:

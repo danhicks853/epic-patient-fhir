@@ -18,32 +18,41 @@ Requires Python 3.10+.
 git clone https://github.com/danhicks853/epic-patient-fhir.git
 cd epic-patient-fhir
 pip install -e .
+epic-patient-fhir install-claude
 ```
+
+`install-claude` adds the connector to the Claude desktop app's config (it
+backs up your existing config first). Fully quit and reopen the Claude app.
+
+Check everything with:
+
+```
+epic-patient-fhir doctor
+```
+
+## Find your health system
+
+About 480 Epic health systems are built in, from Epic's published directory:
+
+```
+epic-patient-fhir orgs advent
+```
+
+Or just tell Claude the name; it can search the same list.
 
 ## Use with Claude
 
 ### Claude desktop app
 
-Add this to your Claude desktop config (Settings, Developer, Edit Config),
-then restart the app:
+`epic-patient-fhir install-claude` does this for you. To do it by hand, add
+this to the Claude desktop config (Settings, Developer, Edit Config), using
+the full path to your Python:
 
 ```json
 {
   "mcpServers": {
     "epic-patient-fhir": {
-      "command": "epic-patient-fhir-mcp"
-    }
-  }
-}
-```
-
-If the app can't find the command (common on Windows), use Python directly:
-
-```json
-{
-  "mcpServers": {
-    "epic-patient-fhir": {
-      "command": "python",
+      "command": "/full/path/to/python",
       "args": ["-m", "epic_patient_fhir.mcp_server"]
     }
   }
@@ -82,7 +91,6 @@ reconnect after that.
 ## Command line export (no AI needed)
 
 ```
-epic-patient-fhir orgs
 epic-patient-fhir export --org adventhealth
 ```
 
@@ -135,9 +143,10 @@ exactly, go by what it means.
 10. Copy the **Non-Production Client ID** into `NONPROD_CLIENT_ID` in
     `src/epic_patient_fhir/orgs.py`. Changes can take up to a day to reach the sandbox.
 11. Test against the sandbox:
-    `epic-patient-fhir export --org sandbox`
-    Sign in as one of Epic's test patients (listed in the fhir.epic.com
-    documentation under sandbox test data). Confirm every section in
+    `epic-patient-fhir doctor` (confirms the sandbox recognizes the app), then
+    `epic-patient-fhir export --org sandbox`.
+    Sign in as Epic's test patient Camila Lopez (username `fhircamila`,
+    password `epicepic1`; more on fhir.epic.com under sandbox test data). Confirm every section in
     `summary.json` has a count and no errors.
 12. Only then mark the app **Ready for Production.** This locks it.
 13. Copy the **Production Client ID** into `PROD_CLIENT_ID`. Auto-distribution
@@ -158,8 +167,16 @@ exactly, go by what it means.
 
 ## Development
 
+Refresh the bundled health-system list before each release:
+
 ```
-NO_PROXY=127.0.0.1,localhost PYTHONPATH=src:tests python -m unittest -v tests/test_offline.py tests/test_mcp.py
+python scripts/update_orgs.py
+```
+
+Run the tests:
+
+```
+NO_PROXY=127.0.0.1,localhost PYTHONPATH=src:tests python -m unittest -v tests/test_offline.py tests/test_mcp.py tests/test_cli.py
 ```
 
 The tests run a full sign-in, export, and every MCP tool against a fake Epic
@@ -168,5 +185,4 @@ server, with PKCE verified. No network or real data.
 ## Roadmap
 
 1. Sandbox validation and production registration.
-2. Full list of Epic health systems, generated from Epic's published endpoint directory.
-3. Longer sessions via Epic's dynamic client registration for native apps.
+2. Longer sessions via Epic's dynamic client registration for native apps.

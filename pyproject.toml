@@ -17,3 +17,6 @@ epic-patient-fhir-mcp = "epic_patient_fhir.mcp_server:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+epic_patient_fhir = ["*.json"]
