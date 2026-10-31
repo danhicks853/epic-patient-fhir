@@ -1,0 +1,10 @@
+# Real medical data never goes in the repo
+exports/
+*.json.local
+
+__pycache__/
+*.pyc
+*.egg-info/
+.venv/
+build/
+dist/

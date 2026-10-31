@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>Returning to the app</title>
+<style>body{font:18px/1.5 system-ui,sans-serif;max-width:36rem;margin:3rem auto;padding:0 16px}</style>
+</head>
+<body>
+<p>Returning you to epic-patient-fhir on your computer...</p>
+<p id="fallback" hidden>If nothing happens, make sure the app is still running in your terminal, then try signing in again.</p>
+<script>
+  // Epic requires an https redirect in production, so sign-in lands here first.
+  // This page forwards the one-time code to the app running on YOUR computer.
+  // Nothing is stored or sent anywhere else. The code is useless on its own:
+  // redeeming it needs a secret (PKCE verifier) that never leaves your machine.
+  // The target is fixed to localhost on purpose; it cannot be redirected elsewhere.
+  (function () {
+    var q = location.search;
+    history.replaceState(null, "", location.pathname);
+    if (q) {
+      location.replace("http://localhost:8765/callback" + q);
+    }
+    setTimeout(function () { document.getElementById("fallback").hidden = false; }, 4000);
+  })();
+</script>
+</body>
+</html>
