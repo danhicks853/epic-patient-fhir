@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Terms of Use and Privacy</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { font: 17px/1.6 system-ui, sans-serif; max-width: 42rem; margin: 2.5rem auto; padding: 0 16px; }
+  h1 { font-size: 1.6rem; } h2 { font-size: 1.15rem; margin-top: 2rem; }
+</style>
+</head>
+<body>
+<h1>epic-patient-fhir: Terms of Use and Privacy</h1>
+<p>Last updated: October 31, 2026</p>
+
+<h2>What this is</h2>
+<p>epic-patient-fhir is free, open-source software that lets you download a copy of your own medical record from health systems that use Epic (MyChart). It uses the patient access API that health systems are required to provide. Source code: <a href="https://github.com/danhicks853/epic-patient-fhir">github.com/danhicks853/epic-patient-fhir</a>.</p>
+
+<h2>Your data stays on your computer</h2>
+<ul>
+  <li>The software runs on your own computer. There is no server, account, or cloud service operated by this project.</li>
+  <li>Your records are downloaded directly from your health system to a folder on your computer. They are not sent to the project or to anyone else.</li>
+  <li>You sign in on your health system's own MyChart page. The software never sees your MyChart password.</li>
+  <li>The access token your health system issues is held in memory for one session and is not written to disk.</li>
+  <li>The project collects no analytics, telemetry, or personal information.</li>
+  <li>The sign-in return page on this website forwards the one-time sign-in code to the software on your computer. It does not store, log, or transmit that code anywhere else, and the code cannot be used without a secret that never leaves your computer.</li>
+</ul>
+
+<h2>Access is read-only</h2>
+<p>The software only reads your record. It cannot change, add to, or delete anything in your health system's records.</p>
+
+<h2>Your responsibilities</h2>
+<ul>
+  <li>Use the software only to access your own records, or records you are legally authorized to access.</li>
+  <li>Once downloaded, your records are your responsibility. Keep them secure, and be careful where you share or upload them.</li>
+  <li>You can revoke the software's access at any time through your MyChart account settings.</li>
+</ul>
+
+<h2>Not medical advice</h2>
+<p>This software retrieves and organizes records. It does not interpret them or provide medical advice. Talk to your care team about your health and about anything in your records.</p>
+
+<h2>No warranty</h2>
+<p>The software is provided "as is," without warranty of any kind, under the <a href="https://github.com/danhicks853/epic-patient-fhir/blob/main/LICENSE">MIT License</a>. The project is not affiliated with or endorsed by Epic Systems Corporation or any health system. Epic and MyChart are trademarks of Epic Systems Corporation.</p>
+
+<h2>Changes and contact</h2>
+<p>Changes to these terms are tracked in the project's public history on GitHub. Questions or concerns: open an issue at <a href="https://github.com/danhicks853/epic-patient-fhir/issues">github.com/danhicks853/epic-patient-fhir/issues</a>.</p>
+</body>
+</html>
