@@ -11,7 +11,7 @@ from dataclasses import dataclass
 
 # Filled in after registration. Non-prod works only on Epic's sandbox;
 # prod works only at real health systems after "Ready for Production".
-NONPROD_CLIENT_ID = ""
+NONPROD_CLIENT_ID = "772b56c6-c854-4929-ac96-4b5707e583d2"
 PROD_CLIENT_ID = ""
 
 # Epic requires an https redirect URI in production. This is the GitHub Pages
