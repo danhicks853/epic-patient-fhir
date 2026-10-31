@@ -153,6 +153,9 @@ def _probe_client(org: Org, client_id: str, redirect_uri: str) -> str:
         status, body, location = resp.status, resp.read().decode("utf-8", "replace"), resp.headers.get("Location")
     except urllib.error.HTTPError as e:
         status, body, location = e.code, e.read().decode("utf-8", "replace"), e.headers.get("Location")
+    except (urllib.error.URLError, OSError) as e:
+        # Network trouble must never read as "not registered".
+        return f"unreachable ({e})"
     if status in (301, 302, 303, 307) and location and "error" not in location.lower():
         return "ok"
     if "OAuth2 Error" in body or "Something went wrong" in body or (location and "error" in location.lower()):
@@ -214,6 +217,8 @@ def cmd_doctor(a) -> int:
             else "this health system hasn't received the app yet, or the app isn't production-ready"
         )
         line(False, f"{org.name} recognizes this app", hint)
+    elif verdict.startswith("unreachable"):
+        line(False, f"{org.name} answered the sign-in check", verdict)
     else:
         line(None, f"{org.name} recognizes this app", verdict)
     print("\nAll good." if ok else "\nSee the FAIL lines above.")
