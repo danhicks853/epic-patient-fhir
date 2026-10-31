@@ -14,7 +14,7 @@ from importlib import resources
 # Filled in after registration. Non-prod works only on Epic's sandbox;
 # prod works only at real health systems after "Ready for Production".
 NONPROD_CLIENT_ID = "772b56c6-c854-4929-ac96-4b5707e583d2"
-PROD_CLIENT_ID = ""
+PROD_CLIENT_ID = "665d97e8-e787-42e2-a224-588059634c8d"
 
 # Epic requires an https redirect URI in production. This is the GitHub Pages
 # copy of docs/callback.html, which forwards to http://localhost:8765/callback.
